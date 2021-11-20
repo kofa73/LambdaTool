@@ -51,7 +51,7 @@ public class CgLibLambdaTool<T> {
     private static class CapturingInterceptor implements MethodInterceptor {
         private Method invokedMethod;
 
-        public Method invokedMethod() {
+        private Method invokedMethod() {
             return invokedMethod;
         }
 

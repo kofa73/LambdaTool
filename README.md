@@ -17,3 +17,7 @@ use a cast to avoid ambiguity. Check out `LambdaToolTest` for examples.
 (the required methods are not 'opened' to the public), you won't be able to use that with Java 17. 
 
 See https://github.com/cglib/cglib/issues/191 for details.
+
+# ByteBuddy version
+`BbLambdaTool`, using ByteBuddy, overcomes the JDK issues; but, so far, I have been unable to get it to work
+with package-private methods (i.e., they need to be `protected` or `private`).
