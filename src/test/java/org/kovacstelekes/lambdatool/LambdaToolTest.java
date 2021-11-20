@@ -3,6 +3,7 @@ package org.kovacstelekes.lambdatool;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
+import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -47,6 +48,22 @@ class LambdaToolTest {
             assertThat(
                     lambdaTool.whichMethod(i -> i.intAndObjectParametersWithReturnType(0, null))
             ).extracting(Method::getName).isEqualTo("intAndObjectParametersWithReturnType");
+
+            assertThat(
+                    lambdaTool.whichMethod(i -> i.manyArguments(null, null, null, null, null, null, null))
+            ).extracting(Method::getName).isEqualTo("manyArguments");
+
+            assertThat(
+                    lambdaTool.whichMethod(i -> i.varArgs())
+            ).extracting(Method::getName).isEqualTo("varArgs");
+
+            assertThat(
+                    lambdaTool.whichMethod((Consumer<TestInterface>) TestInterface::varArgs)
+            ).extracting(Method::getName).isEqualTo("varArgs");
+
+            assertThat(
+                    lambdaTool.whichMethod(i -> i.someArgumentsAndVarArgs(0, ""))
+            ).extracting(Method::getName).isEqualTo("someArgumentsAndVarArgs");
         });
     }
 
@@ -68,5 +85,11 @@ class LambdaToolTest {
         String twoObjectParametersWithReturnType(Object o1, Object o2);
 
         String intAndObjectParametersWithReturnType(int i, Object o);
+
+        void manyArguments(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7);
+
+        void varArgs(Object... arguments);
+
+        void someArgumentsAndVarArgs(int i, String s, Double... doubles);
     }
 }
