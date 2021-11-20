@@ -20,4 +20,4 @@ See https://github.com/cglib/cglib/issues/191 for details.
 
 # ByteBuddy version
 `BbLambdaTool`, using ByteBuddy, overcomes the JDK issues; but, so far, I have been unable to get it to work
-with package-private methods (i.e., they need to be `protected` or `private`).
+with package-private methods (i.e., they need to be `protected` or `public`).
