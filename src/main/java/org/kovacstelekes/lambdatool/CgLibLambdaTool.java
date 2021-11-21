@@ -40,6 +40,7 @@ public class CgLibLambdaTool<T> {
     }
 
     private Method captureInvokedMethod(Consumer<T> invocation) {
+        interceptor.reset();
         invocation.accept(cgLibEnhancer);
         return interceptor.invokedMethod();
     }
@@ -51,14 +52,18 @@ public class CgLibLambdaTool<T> {
     private static class CapturingInterceptor implements MethodInterceptor {
         private Method invokedMethod;
 
-        private Method invokedMethod() {
-            return invokedMethod;
-        }
-
         @Override
         public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) {
             invokedMethod = method;
             return null;
+        }
+
+        private void reset() {
+            invokedMethod = null;
+        }
+
+        private Method invokedMethod() {
+            return invokedMethod;
         }
     }
 }

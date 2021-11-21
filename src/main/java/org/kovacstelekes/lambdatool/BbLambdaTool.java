@@ -23,6 +23,7 @@ public class BbLambdaTool<T> {
                     .make()
                     .load(type.getClassLoader())
                     .getLoaded()
+                    .getConstructor()
                     .newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
@@ -50,6 +51,7 @@ public class BbLambdaTool<T> {
     }
 
     private Method captureInvokedMethod(Consumer<T> invocation) {
+        invocationHandler.reset();
         invocation.accept(buddy);
         return invocationHandler.invokedMethod();
     }
@@ -67,6 +69,10 @@ public class BbLambdaTool<T> {
             this.invokedMethod = method;
             // return value is ignored by caller
             return null;
+        }
+
+        private void reset() {
+            invokedMethod = null;
         }
 
         private Method invokedMethod() {

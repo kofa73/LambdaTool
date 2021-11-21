@@ -41,6 +41,7 @@ public class LambdaTool<T> {
     }
 
     private Method captureInvokedMethod(Consumer<T> invocation) {
+        invocationHandler.reset();
         invocation.accept(proxy);
         return invocationHandler.invokedMethod();
     }
@@ -58,6 +59,10 @@ public class LambdaTool<T> {
             this.invokedMethod = method;
             // return value is ignored by caller
             return null;
+        }
+
+        private void reset() {
+            invokedMethod = null;
         }
 
         private Method invokedMethod() {

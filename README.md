@@ -20,4 +20,10 @@ See https://github.com/cglib/cglib/issues/191 for details.
 
 # ByteBuddy version
 `BbLambdaTool`, using ByteBuddy, overcomes the JDK issues; but, so far, I have been unable to get it to work
-with package-private methods (i.e., they need to be `protected` or `public`).
+with package-private methods (i.e., they need to be `protected` or `public`). The reason is that ByteBuddy
+needs a new classloader that can access the bytecode of the generated class, therefore even though the
+package names match, the packages (identified by name + classloader) will be different; therefore, the package-private
+method in the generated class will not override the package-private method in the original one.
+See https://stackoverflow.com/a/26861830 and a related Mockito issue at
+https://github.com/mockito/mockito/issues/796#issuecomment-266785414.
+(Thanks to [Peter Verhás](https://javax0.wordpress.com/) for the tip.)
