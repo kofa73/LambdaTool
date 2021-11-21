@@ -1,5 +1,6 @@
 package org.kovacstelekes.lambdatool;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
@@ -67,8 +68,34 @@ class BbLambdaToolTest {
         });
     }
 
+
+    @Test
+    @DisplayName("Returns null when not a method in the interface")
+    void whichMethod_testE() {
+        BbLambdaTool<TestClass> lambdaTool = BbLambdaTool.forType(TestClass.class);
+        assertThat(
+            lambdaTool.whichMethod(TestClass::doesNotWorkWithIt)
+        ).isNull();
+    }
+
+
+    @Test
+    @DisplayName("Returns null when not a method in the interface even after a successful call, so method was reset()")
+    void whichMethod_testF() {
+        BbLambdaTool<TestClass> lambdaTool = BbLambdaTool.forType(TestClass.class);
+        assertThat(
+            lambdaTool.whichMethod(TestClass::parameterlessVoid)
+        ).extracting(Method::getName).isEqualTo("parameterlessVoid");
+        assertThat(
+            lambdaTool.whichMethod(TestClass::doesNotWorkWithIt)
+        ).isNull();
+    }
+
     // methods need to be public or protected
     public static class TestClass {
+
+        void doesNotWorkWithIt(){}
+
         protected void parameterlessVoid() {}
 
         protected void singleObjectParameterToVoid(Object o) {}

@@ -1,5 +1,6 @@
 package org.kovacstelekes.lambdatool;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
@@ -65,6 +66,28 @@ class CgLibLambdaToolTest {
                     lambdaTool.whichMethod(i -> i.someArgumentsAndVarArgs(0, ""))
             ).extracting(Method::getName).isEqualTo("someArgumentsAndVarArgs");
         });
+    }
+
+    @Test
+    @DisplayName("Returns null when not a method in the interface")
+    void whichMethod_testE() {
+        CgLibLambdaTool<TestClass> lambdaTool = CgLibLambdaTool.forType(TestClass.class);
+        assertThat(
+            lambdaTool.whichMethod(ti -> Object.class.cast(ti))
+        ).isNull();
+    }
+
+
+    @Test
+    @DisplayName("Returns null when not a method in the interface even after a successful call, so method was reset()")
+    void whichMethod_testF() {
+        CgLibLambdaTool<TestClass> lambdaTool = CgLibLambdaTool.forType(TestClass.class);
+        assertThat(
+            lambdaTool.whichMethod(TestClass::parameterlessVoid)
+        ).extracting(Method::getName).isEqualTo("parameterlessVoid");
+        assertThat(
+            lambdaTool.whichMethod(ti -> Object.class.cast(ti))
+        ).isNull();
     }
 
     private static class TestClass {

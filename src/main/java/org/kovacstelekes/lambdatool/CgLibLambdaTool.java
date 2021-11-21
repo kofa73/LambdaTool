@@ -40,6 +40,7 @@ public class CgLibLambdaTool<T> {
     }
 
     private Method captureInvokedMethod(Consumer<T> invocation) {
+        interceptor.reset();
         invocation.accept(cgLibEnhancer);
         return interceptor.invokedMethod();
     }
@@ -48,8 +49,25 @@ public class CgLibLambdaTool<T> {
         void accept(T proxy, Object param1, Object param2);
     }
 
+    /**
+     * An implementation of the {@link MethodInterceptor} interface, which captures the method that was invoked and
+     * returns {@code null}. It does NOT invoke the original method.
+     * <p>
+     * The captured method is stored in a private field and can be queried later calling {@link #invokedMethod()}
+     */
     private static class CapturingInterceptor implements MethodInterceptor {
         private Method invokedMethod;
+
+        /**
+         * Reset the invoked method. It is needed to allow repetitive call to the same {@link BbLambdaTool} instance.
+         * If the method is not reset and the same instance is used for multiple calls, the captured method may be the
+         * last one that was successfully captured, instead of {@code null} when the
+         * {@link BbLambdaTool#whichMethod(Consumer) whichMethod()} is invoked for a reference or lambda expression that
+         * cannot be captured.
+         */
+        void reset() {
+            invokedMethod = null;
+        }
 
         private Method invokedMethod() {
             return invokedMethod;
