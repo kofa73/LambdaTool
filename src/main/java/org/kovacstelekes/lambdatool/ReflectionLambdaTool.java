@@ -1,37 +1,27 @@
 package org.kovacstelekes.lambdatool;
 
-import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.implementation.InvocationHandlerAdapter;
-import net.bytebuddy.matcher.ElementMatchers;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class BbLambdaTool<T> implements LambdaTool<T> {
-    private final T buddy;
+public class ReflectionLambdaTool<T> implements LambdaTool<T> {
+    private final T proxy;
     private final CapturingInvocationHandler invocationHandler;
 
-    private BbLambdaTool(Class<T> type) {
-        try {
-            invocationHandler = new CapturingInvocationHandler();
-            buddy = new ByteBuddy()
-                    .subclass(type)
-                    .method(ElementMatchers.any())
-                    .intercept(InvocationHandlerAdapter.of(invocationHandler))
-                    .make()
-                    .load(type.getClassLoader())
-                    .getLoaded()
-                    .getConstructor()
-                    .newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
+    static <T> ReflectionLambdaTool<T> forType(Class<T> type) {
+        return new ReflectionLambdaTool<>(type);
     }
 
-    public static <T> BbLambdaTool<T> forType(Class<T> type) {
-        return new BbLambdaTool<>(type);
+    private ReflectionLambdaTool(Class<T> type) {
+        invocationHandler = new CapturingInvocationHandler();
+        proxy = type.cast(
+                Proxy.newProxyInstance(
+                        type.getClassLoader(),
+                        new Class<?>[]{type},
+                        invocationHandler)
+        );
     }
 
     @Override
@@ -41,21 +31,21 @@ public class BbLambdaTool<T> implements LambdaTool<T> {
 
     @Override
     public Method whichMethod(BiConsumer<T, ?> methodInvocationWithSingleParameter) {
-        return captureInvokedMethod(enhancer ->
-                methodInvocationWithSingleParameter.accept(enhancer, null)
+        return captureInvokedMethod(proxy ->
+                methodInvocationWithSingleParameter.accept(proxy, null)
         );
     }
 
     @Override
     public Method whichMethod(MethodCallWithTwoParameters<T> methodInvocationWithTwoParameters) {
-        return captureInvokedMethod(enhancer ->
-                methodInvocationWithTwoParameters.accept(enhancer, null, null)
+        return captureInvokedMethod(proxy ->
+                methodInvocationWithTwoParameters.accept(proxy, null, null)
         );
     }
 
     private Method captureInvokedMethod(Consumer<T> invocation) {
         invocationHandler.reset();
-        invocation.accept(buddy);
+        invocation.accept(proxy);
         return invocationHandler.invokedMethod();
     }
 

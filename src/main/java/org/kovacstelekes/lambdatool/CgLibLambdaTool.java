@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class CgLibLambdaTool<T> {
+public class CgLibLambdaTool<T>  implements LambdaTool<T> {
     private final T cgLibEnhancer;
     private final CapturingInterceptor interceptor;
 
@@ -23,16 +23,19 @@ public class CgLibLambdaTool<T> {
         return new CgLibLambdaTool<>(type);
     }
 
+    @Override
     public Method whichMethod(Consumer<T> parameterlessMethodInvocation) {
         return captureInvokedMethod(parameterlessMethodInvocation);
     }
 
+    @Override
     public Method whichMethod(BiConsumer<T, ?> methodInvocationWithSingleParameter) {
         return captureInvokedMethod(enhancer ->
                 methodInvocationWithSingleParameter.accept(enhancer, null)
         );
     }
 
+    @Override
     public Method whichMethod(MethodCallWithTwoParameters<T> methodInvocationWithTwoParameters) {
         return captureInvokedMethod(enhancer ->
                 methodInvocationWithTwoParameters.accept(enhancer, null, null)
@@ -43,10 +46,6 @@ public class CgLibLambdaTool<T> {
         interceptor.reset();
         invocation.accept(cgLibEnhancer);
         return interceptor.invokedMethod();
-    }
-
-    public interface MethodCallWithTwoParameters<T> {
-        void accept(T proxy, Object param1, Object param2);
     }
 
     private static class CapturingInterceptor implements MethodInterceptor {
