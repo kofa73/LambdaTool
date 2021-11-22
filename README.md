@@ -14,7 +14,7 @@ use a cast to avoid ambiguity. Check out `LambdaToolTest` for examples.
 
 # CgLib version
 `CgLibLambdaTool` also supports classes; however, with CgLib not being compatible with the latest Java versions
-(the required methods are not 'opened' to the public), you won't be able to use that with Java 17. 
+(the required methods are not 'opened' to the public), you won't be able to use that with Java 17.
 
 See https://github.com/cglib/cglib/issues/191 for details.
 
@@ -26,4 +26,4 @@ package names match, the packages (identified by name + classloader) will be dif
 method in the generated class will not override the package-private method in the original one.
 See https://stackoverflow.com/a/26861830 and a related Mockito issue at
 https://github.com/mockito/mockito/issues/796#issuecomment-266785414.
-(Thanks to [Peter Verhás](https://javax0.wordpress.com/) for the tip.)
+(Thanks to [Péter Verhás](https://javax0.wordpress.com/) for the tip.)
