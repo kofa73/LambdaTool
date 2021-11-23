@@ -3,6 +3,7 @@ package org.kovacstelekes.lambdatool;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -24,23 +25,23 @@ public class LambdaTool<T> {
         return new LambdaTool<>(type);
     }
 
-    public Method whichMethod(Consumer<T> parameterlessMethodInvocation) {
+    public Optional<Method> whichMethod(Consumer<T> parameterlessMethodInvocation) {
         return captureInvokedMethod(parameterlessMethodInvocation);
     }
 
-    public Method whichMethod(BiConsumer<T, ?> methodInvocationWithSingleParameter) {
+    public Optional<Method> whichMethod(BiConsumer<T, ?> methodInvocationWithSingleParameter) {
         return captureInvokedMethod(proxy ->
                 methodInvocationWithSingleParameter.accept(proxy, null)
         );
     }
 
-    public Method whichMethod(MethodCallWithTwoParameters<T> methodInvocationWithTwoParameters) {
+    public Optional<Method> whichMethod(MethodCallWithTwoParameters<T> methodInvocationWithTwoParameters) {
         return captureInvokedMethod(proxy ->
                 methodInvocationWithTwoParameters.accept(proxy, null, null)
         );
     }
 
-    private Method captureInvokedMethod(Consumer<T> invocation) {
+    private Optional<Method> captureInvokedMethod(Consumer<T> invocation) {
         invocationHandler.reset();
         invocation.accept(proxy);
         return invocationHandler.invokedMethod();
@@ -55,7 +56,7 @@ public class LambdaTool<T> {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) {
-            // side effect: method is captured
+            // side effect: Optional<Method> is captured
             this.invokedMethod = method;
             // return value is ignored by caller
             return null;
@@ -65,8 +66,8 @@ public class LambdaTool<T> {
             invokedMethod = null;
         }
 
-        private Method invokedMethod() {
-            return invokedMethod;
+        private Optional<Method> invokedMethod() {
+            return Optional.ofNullable(invokedMethod);
         }
     }
 }

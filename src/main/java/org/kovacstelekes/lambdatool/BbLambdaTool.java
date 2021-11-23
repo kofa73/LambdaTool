@@ -6,6 +6,7 @@ import net.bytebuddy.matcher.ElementMatchers;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -34,23 +35,23 @@ public class BbLambdaTool<T> {
         return new BbLambdaTool<>(type);
     }
 
-    public Method whichMethod(Consumer<T> parameterlessMethodInvocation) {
+    public Optional<Method> whichMethod(Consumer<T> parameterlessMethodInvocation) {
         return captureInvokedMethod(parameterlessMethodInvocation);
     }
 
-    public Method whichMethod(BiConsumer<T, ?> methodInvocationWithSingleParameter) {
+    public Optional<Method> whichMethod(BiConsumer<T, ?> methodInvocationWithSingleParameter) {
         return captureInvokedMethod(enhancer ->
                 methodInvocationWithSingleParameter.accept(enhancer, null)
         );
     }
 
-    public Method whichMethod(MethodCallWithTwoParameters<T> methodInvocationWithTwoParameters) {
+    public Optional<Method> whichMethod(MethodCallWithTwoParameters<T> methodInvocationWithTwoParameters) {
         return captureInvokedMethod(enhancer ->
                 methodInvocationWithTwoParameters.accept(enhancer, null, null)
         );
     }
 
-    private Method captureInvokedMethod(Consumer<T> invocation) {
+    private Optional<Method> captureInvokedMethod(Consumer<T> invocation) {
         invocationHandler.reset();
         invocation.accept(buddy);
         return invocationHandler.invokedMethod();
@@ -75,8 +76,8 @@ public class BbLambdaTool<T> {
             invokedMethod = null;
         }
 
-        private Method invokedMethod() {
-            return invokedMethod;
+        private Optional<Method> invokedMethod() {
+            return Optional.ofNullable(invokedMethod);
         }
     }
 }

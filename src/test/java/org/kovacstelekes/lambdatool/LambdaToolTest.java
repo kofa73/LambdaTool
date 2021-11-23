@@ -15,55 +15,55 @@ class LambdaToolTest {
         assertSoftly(softly -> {
             assertThat(
                     lambdaTool.whichMethod(TestInterface::parameterlessVoid)
-            ).extracting(Method::getName).isEqualTo("parameterlessVoid");
+            ).isPresent().get().extracting(Method::getName).isEqualTo("parameterlessVoid");
 
             assertThat(
                     lambdaTool.whichMethod(TestInterface::singleObjectParameterToVoid)
-            ).extracting(Method::getName).isEqualTo("singleObjectParameterToVoid");
+            ).isPresent().get().extracting(Method::getName).isEqualTo("singleObjectParameterToVoid");
 
             assertThat(
                     lambdaTool.whichMethod(i -> i.singleIntParameterToVoid(0))
-            ).extracting(Method::getName).isEqualTo("singleIntParameterToVoid");
+            ).isPresent().get().extracting(Method::getName).isEqualTo("singleIntParameterToVoid");
 
             assertThat(
                     lambdaTool.whichMethod(TestInterface::twoObjectParametersToVoid)
-            ).extracting(Method::getName).isEqualTo("twoObjectParametersToVoid");
+            ).isPresent().get().extracting(Method::getName).isEqualTo("twoObjectParametersToVoid");
 
             assertThat(
                     lambdaTool.whichMethod(i -> i.intAndObjectParametersToVoid(0, null))
-            ).extracting(Method::getName).isEqualTo("intAndObjectParametersToVoid");
+            ).isPresent().get().extracting(Method::getName).isEqualTo("intAndObjectParametersToVoid");
 
             assertThat(
                     lambdaTool.whichMethod(TestInterface::parameterlessWithReturnType)
-            ).extracting(Method::getName).isEqualTo("parameterlessWithReturnType");
+            ).isPresent().get().extracting(Method::getName).isEqualTo("parameterlessWithReturnType");
 
             assertThat(
                     lambdaTool.whichMethod(TestInterface::singleObjectParameterWithReturnType)
-            ).extracting(Method::getName).isEqualTo("singleObjectParameterWithReturnType");
+            ).isPresent().get().extracting(Method::getName).isEqualTo("singleObjectParameterWithReturnType");
 
             assertThat(
                     lambdaTool.whichMethod(TestInterface::twoObjectParametersWithReturnType)
-            ).extracting(Method::getName).isEqualTo("twoObjectParametersWithReturnType");
+            ).isPresent().get().extracting(Method::getName).isEqualTo("twoObjectParametersWithReturnType");
 
             assertThat(
                     lambdaTool.whichMethod(i -> i.intAndObjectParametersWithReturnType(0, null))
-            ).extracting(Method::getName).isEqualTo("intAndObjectParametersWithReturnType");
+            ).isPresent().get().extracting(Method::getName).isEqualTo("intAndObjectParametersWithReturnType");
 
             assertThat(
                     lambdaTool.whichMethod(i -> i.manyArguments(null, null, null, null, null, null, null))
-            ).extracting(Method::getName).isEqualTo("manyArguments");
+            ).isPresent().get().extracting(Method::getName).isEqualTo("manyArguments");
 
             assertThat(
                     lambdaTool.whichMethod(i -> i.varArgs())
-            ).extracting(Method::getName).isEqualTo("varArgs");
+            ).isPresent().get().extracting(Method::getName).isEqualTo("varArgs");
 
             assertThat(
                     lambdaTool.whichMethod((Consumer<TestInterface>) TestInterface::varArgs)
-            ).extracting(Method::getName).isEqualTo("varArgs");
+            ).isPresent().get().extracting(Method::getName).isEqualTo("varArgs");
 
             assertThat(
                     lambdaTool.whichMethod(i -> i.someArgumentsAndVarArgs(0, ""))
-            ).extracting(Method::getName).isEqualTo("someArgumentsAndVarArgs");
+            ).isPresent().get().extracting(Method::getName).isEqualTo("someArgumentsAndVarArgs");
         });
     }
 
