@@ -27,6 +27,11 @@
             <artifactId>byte-buddy</artifactId>
             <version>1.12.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.javax0.geci</groupId>
+            <artifactId>javageci-testengine</artifactId>
+            <version>1.6.5</version>
+        </dependency>
     </dependencies>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
