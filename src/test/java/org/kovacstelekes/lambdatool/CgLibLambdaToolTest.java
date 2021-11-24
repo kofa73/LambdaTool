@@ -13,6 +13,22 @@ class CgLibLambdaToolTest {
     void whichMethod_extractsCorrectMethod() {
         CgLibLambdaTool<TestClass> lambdaTool = CgLibLambdaTool.forType(TestClass.class);
         assertSoftly(softly -> {
+
+            assertThat(
+                lambdaTool.whichMethod(i -> i.singleIntParameterToVoid(0))
+            ).extracting(Method::getName).isEqualTo("singleIntParameterToVoid");
+
+            /*!jamal
+            // <editor-fold desc="generated code">
+            {%@for $method in (parameterlessVoid,singleObjectParameterToVoid,twoObjectParametersToVoid,parameterlessWithReturnType,singleObjectParameterWithReturnType,twoObjectParametersWithReturnType)=
+            assertThat(
+                    lambdaTool.whichMethod(TestClass::$method)
+            ).extracting(Method::getName).isEqualTo("$method");
+            %}
+            // </editor-fold>
+             */
+            // <editor-fold desc="generated code">
+
             assertThat(
                     lambdaTool.whichMethod(TestClass::parameterlessVoid)
             ).extracting(Method::getName).isEqualTo("parameterlessVoid");
@@ -22,16 +38,8 @@ class CgLibLambdaToolTest {
             ).extracting(Method::getName).isEqualTo("singleObjectParameterToVoid");
 
             assertThat(
-                    lambdaTool.whichMethod(i -> i.singleIntParameterToVoid(0))
-            ).extracting(Method::getName).isEqualTo("singleIntParameterToVoid");
-
-            assertThat(
                     lambdaTool.whichMethod(TestClass::twoObjectParametersToVoid)
             ).extracting(Method::getName).isEqualTo("twoObjectParametersToVoid");
-
-            assertThat(
-                    lambdaTool.whichMethod(i -> i.intAndObjectParametersToVoid(0, null))
-            ).extracting(Method::getName).isEqualTo("intAndObjectParametersToVoid");
 
             assertThat(
                     lambdaTool.whichMethod(TestClass::parameterlessWithReturnType)
@@ -44,6 +52,14 @@ class CgLibLambdaToolTest {
             assertThat(
                     lambdaTool.whichMethod(TestClass::twoObjectParametersWithReturnType)
             ).extracting(Method::getName).isEqualTo("twoObjectParametersWithReturnType");
+
+            // </editor-fold>
+            // __END__
+
+
+            assertThat(
+                    lambdaTool.whichMethod(i -> i.intAndObjectParametersToVoid(0, null))
+            ).extracting(Method::getName).isEqualTo("intAndObjectParametersToVoid");
 
             assertThat(
                     lambdaTool.whichMethod(i -> i.intAndObjectParametersWithReturnType(0, null))
