@@ -8,10 +8,10 @@ import java.util.function.Consumer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-class LambdaToolTest {
+class ProxyLambdaToolTest {
     @Test
     void whichMethod_extractsCorrectMethod() {
-        LambdaTool<TestInterface> lambdaTool = LambdaTool.forType(TestInterface.class);
+        ProxyLambdaTool<TestInterface> lambdaTool = ProxyLambdaTool.forType(TestInterface.class);
         assertSoftly(softly -> {
             assertThat(
                     lambdaTool.whichMethod(TestInterface::parameterlessVoid)

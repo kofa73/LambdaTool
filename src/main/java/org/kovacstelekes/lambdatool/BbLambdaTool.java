@@ -4,19 +4,15 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.implementation.InvocationHandlerAdapter;
 import net.bytebuddy.matcher.ElementMatchers;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+public class BbLambdaTool<T> extends AbstractLambdaTool<T> {
+    private BbLambdaTool(T buddy, CapturingInvocationHandler invocationHandler) {
+        super(buddy, invocationHandler);
+    }
 
-public class BbLambdaTool<T> {
-    private final T buddy;
-    private final CapturingInvocationHandler invocationHandler;
-
-    private BbLambdaTool(Class<T> type) {
+    public static <T> BbLambdaTool<T> forType(Class<T> type) {
+        CapturingInvocationHandler invocationHandler = new CapturingInvocationHandler();
+        T buddy;
         try {
-            invocationHandler = new CapturingInvocationHandler();
             buddy = new ByteBuddy()
                     .subclass(type)
                     .method(ElementMatchers.any())
@@ -29,55 +25,6 @@ public class BbLambdaTool<T> {
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static <T> BbLambdaTool<T> forType(Class<T> type) {
-        return new BbLambdaTool<>(type);
-    }
-
-    public Optional<Method> whichMethod(Consumer<T> parameterlessMethodInvocation) {
-        return captureInvokedMethod(parameterlessMethodInvocation);
-    }
-
-    public Optional<Method> whichMethod(BiConsumer<T, ?> methodInvocationWithSingleParameter) {
-        return captureInvokedMethod(enhancer ->
-                methodInvocationWithSingleParameter.accept(enhancer, null)
-        );
-    }
-
-    public Optional<Method> whichMethod(MethodCallWithTwoParameters<T> methodInvocationWithTwoParameters) {
-        return captureInvokedMethod(enhancer ->
-                methodInvocationWithTwoParameters.accept(enhancer, null, null)
-        );
-    }
-
-    private Optional<Method> captureInvokedMethod(Consumer<T> invocation) {
-        invocationHandler.reset();
-        invocation.accept(buddy);
-        return invocationHandler.invokedMethod();
-    }
-
-    public interface MethodCallWithTwoParameters<T> {
-        void accept(T proxy, Object param1, Object param2);
-    }
-
-    private static class CapturingInvocationHandler implements InvocationHandler {
-        private Method invokedMethod;
-
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args) {
-            // side effect: method is captured
-            this.invokedMethod = method;
-            // return value is ignored by caller
-            return null;
-        }
-
-        private void reset() {
-            invokedMethod = null;
-        }
-
-        private Optional<Method> invokedMethod() {
-            return Optional.ofNullable(invokedMethod);
-        }
+        return new BbLambdaTool<>(buddy, invocationHandler);
     }
 }
