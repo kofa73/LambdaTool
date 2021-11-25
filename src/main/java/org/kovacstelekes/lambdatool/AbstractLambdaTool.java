@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public abstract class AbstractLambdaTool<T> implements LambdaTool<T> {
+public abstract class AbstractLambdaTool<T> {
     private final T target;
     private final MethodCapturingCallback callback;
 
